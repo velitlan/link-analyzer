@@ -1,7 +1,7 @@
 import requests
 import base64
 
-API_KEY = 'ef30f9596a0f2c53f3c50851c22eb2b1233b8b56894b1676277343ffdebfdfc5'  #Zensiert
+API_KEY = ''  #Zensiert
 
 def encode_url(url):
     """Encodiert die URL in Base64."""
