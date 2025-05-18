@@ -8,7 +8,6 @@ def encode_url(url):
     return base64.urlsafe_b64encode(url.encode()).decode().strip('=')
 
 def fetch_url_analysis(url_id):
-    """Ruft die Analyse der URL von VirusTotal ab."""
     url = f"https://www.virustotal.com/api/v3/urls/{url_id}"
     headers = {"x-apikey": API_KEY}
     try:
@@ -20,7 +19,6 @@ def fetch_url_analysis(url_id):
         return None
 
 def analyze_url_data(data):
-    """Analysiert die URL-Daten und gibt die Ergebnisse aus."""
     if not data:
         print("\nKeine Daten für diese URL verfügbar.")
         return
