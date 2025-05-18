@@ -1,37 +1,50 @@
 import requests
 import base64
 
-API_KEY = 'PLATZHALTER'  #Zensiert
-url_to_check = input("Gib die zu prüfende URL ein:\n").strip()
+API_KEY = 'ef30f9596a0f2c53f3c50851c22eb2b1233b8b56894b1676277343ffdebfdfc5'  #Zensiert
 
-#URL base64-encodieren
-url_id = base64.urlsafe_b64encode(url_to_check.encode()).decode().strip('=')
+def encode_url(url):
+    """Encodiert die URL in Base64."""
+    return base64.urlsafe_b64encode(url.encode()).decode().strip('=')
 
-headers = {
-    "x-apikey": API_KEY
-}
+def fetch_url_analysis(url_id):
+    """Ruft die Analyse der URL von VirusTotal ab."""
+    url = f"https://www.virustotal.com/api/v3/urls/{url_id}"
+    headers = {"x-apikey": API_KEY}
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  #Ausnahme
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Fehler bei der Anfrage: {e}")
+        return None
 
-#Analyse anfordern
-response = requests.get(f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers)
+def analyze_url_data(data):
+    """Analysiert die URL-Daten und gibt die Ergebnisse aus."""
+    if not data:
+        print("\nKeine Daten für diese URL verfügbar.")
+        return
 
-if response.status_code == 200:
-    data = response.json()
     stats = data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
     harmlos = stats.get('harmless', 0)
     sus = stats.get('suspicious', 0)
     mali = stats.get('malicious', 0)
     unent = stats.get('undetected', 0)
+
     if mali > 0:
         print("\nDie URL wurde als bösartig eingestuft!")
-
     elif sus > 0:
         print("\nDie URL zeigt verdächtige Merkmale.")
-
     elif harmlos > 0 and unent > 0:
         print("\nDie URL wird als harmlos eingestuft. Sie scheint sicher zu sein.")
-
     else:
-        print("\nKeine Daten für diese URL verfügbar.")
+        print("\nKeine ausreichenden Informationen zur URL.")
 
-else:
-    print(f"Fehler bei der Anfrage: {response.status_code}")
+def main():
+    url_to_check = input("Gib die zu prüfende URL ein:\n").strip()
+    url_id = encode_url(url_to_check)
+    data = fetch_url_analysis(url_id)
+    analyze_url_data(data)
+
+if __name__ == "__main__":
+    main()
